@@ -630,6 +630,14 @@
 				return;
 			}
 
+			// canonical uri that will be shared
+			var uri = this_options.uri;
+			if (typeof uri === 'function') {
+				uri = uri.call(this, this_options);
+			}
+
+			var $context = $('<ul style="display:none" class="social_share_privacy_area"></ul>').addClass(this_options.layout);
+
 			// insert stylesheet into document and prepend target element
 			if (this_options.css_path) {
 				var css_path = (this_options.path_prefix||"") + this_options.css_path;
@@ -637,7 +645,15 @@
 				if (document.createStyleSheet) {
 					document.createStyleSheet(css_path);
 				} else if ($('link[href="'+css_path+'"]').length === 0) {
-					$('<link/>',{rel:'stylesheet',type:'text/css',href:css_path}).appendTo(document.head);
+					$('<link/>',
+                                           {rel:'stylesheet',
+                                            type:'text/css',
+                                            href:css_path}).
+                                        load(
+                                           function() {
+console.log("loaded CSS");
+                                              $context.show(); 
+                                           }).appendTo(document.head);
 				}
 			}
 
@@ -655,13 +671,6 @@
 				}
 			}
 
-			// canonical uri that will be shared
-			var uri = this_options.uri;
-			if (typeof uri === 'function') {
-				uri = uri.call(this, this_options);
-			}
-
-			var $context = $('<ul class="social_share_privacy_area"></ul>').addClass(this_options.layout);
 			var $share = $(this);
 
 			$share.prepend($context).data('social-share-privacy-options',this_options);
@@ -700,7 +709,7 @@
 					$context.append($help_info);
 				}
 			}
-			
+
 			//
 			// append Info/Settings-area
 			//
